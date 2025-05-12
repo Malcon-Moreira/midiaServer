@@ -1,0 +1,26 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Bem-vindo, {{ usuario }}!</h1>
+    <h2>Seus vídeos:</h2>
+
+    {% for video in videos %}
+        <div style="margin-bottom: 20px;">
+            <h3>{{ video }}</h3>
+            <video width="480" controls>
+                <source src="{{ url_for('servir_video', nome_arquivo=video) }}" type="video/mp4">
+                Seu navegador não suporta a reprodução de vídeo.
+            </video>
+        </div>
+    {% endfor %}
+
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>
