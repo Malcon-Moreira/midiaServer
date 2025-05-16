@@ -4,8 +4,12 @@ from flask import Flask, jsonify, send_from_directory, request, render_template,
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity, set_access_cookies, unset_jwt_cookies
 )
-from requirements import CHAVE_SECRETA
-from views import check_user_exists, add_user, check_login
+from dotenv import load_dotenv
+import os
+from model import check_user_exists, add_user, check_login
+
+CHAVE_SECRETA = os.getenv('CHAVE_SECRETA')
+PASTA_FILMES = os.getenv('PASTA_FILMES')
 
 app = Flask(__name__)
 
@@ -31,12 +35,20 @@ def sign_up():
         return jsonify({"Mensagem": "Usuario cadastrado com sucesso!"})
 
 
+@app.route('/', methods=['GET'])
+def index():
+    return make_response(redirect(url_for('login')))
+
+
 @app.route('/home', methods=['GET'])
 @jwt_required()
 def home():
     usuario = get_jwt_identity()
-    pasta_videos = os.path.join(os.getcwd(), 'D:/filmes')
-    lista_videos = [f for f in os.listdir(pasta_videos) if f.endswith('.mkv')]
+    pasta_videos = os.path.join(os.getcwd(), PASTA_FILMES)
+    lista_videos = [f for f in os.listdir(pasta_videos) if f.endswith('.mp4') or f.endswith('mkv')]
+    for mkv in lista_videos:
+        if mkv.endswith('.mkv'):
+            print(mkv)
     return render_template('home.html', usuario=usuario, videos=lista_videos)
 
 
@@ -65,7 +77,7 @@ def logout():
 @app.route('/videos/<nome_arquivo>')
 @jwt_required()
 def servir_video(nome_arquivo):
-    caminho = os.path.join(os.getcwd(), 'D:/filmes')
+    caminho = os.path.join(os.getcwd(), PASTA_FILMES)
     return send_from_directory(caminho, nome_arquivo)
 
 

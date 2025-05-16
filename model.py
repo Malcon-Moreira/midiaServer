@@ -1,7 +1,11 @@
 import sqlite3
-from requirements import BANCO
+import subprocess
+
+from dotenv import load_dotenv
+import os
 import bcrypt
 
+BANCO = os.getenv('BANCO')
 
 def connect_banco():
     conn = sqlite3.connect(BANCO)
@@ -35,8 +39,7 @@ def check_login(username, password):
     if not senha_banco:
         return False
     if bcrypt.checkpw(password.encode(), senha_banco[0]):
-        print("Senha correta")
         return True
     else:
-        print("Senha incorreta")
         return False
+
